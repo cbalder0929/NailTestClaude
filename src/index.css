@@ -1,0 +1,201 @@
+@import 'tailwindcss';
+
+/* ── Design tokens ───────────────────────────────────────────────────────
+   Brand colours are overwritten at runtime from src/config/salon.ts
+   (see applyBrand in src/lib/brand.ts), so re-branding never touches CSS. */
+@theme {
+  --color-rose: #e8a0b4;
+  --color-rose-deep: #c2185b;
+  --color-blush: #fbe4ea;
+  --color-cream: #fff8f3;
+  --color-gold: #c9a96e;
+  --color-ink: #2b1f24;
+  --color-muted: #6a5560; /* AA on cream (6.4:1) and blush (5.5:1) */
+  --color-line: #f0d5dc;
+
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* pink-tinted, layered shadows (never grey) */
+  --shadow-soft: 0 1px 2px rgb(194 24 91 / 0.05), 0 6px 16px -6px rgb(194 24 91 / 0.12),
+    0 22px 40px -22px rgb(194 24 91 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(194 24 91 / 0.06), 0 14px 28px -10px rgb(194 24 91 / 0.2),
+    0 36px 60px -28px rgb(194 24 91 / 0.28);
+  --shadow-nav: 0 1px 0 rgb(194 24 91 / 0.06), 0 10px 30px -14px rgb(194 24 91 / 0.22);
+
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-ink;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-rose-deep);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+  ::selection {
+    background: var(--color-blush);
+  }
+  /* 16px minimum prevents iOS zoom-on-focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-sans text-xs font-semibold uppercase text-rose-deep;
+    letter-spacing: 0.22em;
+  }
+  .gold-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  }
+  .bg-blush-fade {
+    background: linear-gradient(180deg, var(--color-blush) 0%, var(--color-cream) 100%);
+  }
+  .bg-cream-blush {
+    background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-blush) 100%);
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Motion ───────────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s var(--ease-soft), transform 0.7s var(--ease-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.step-in {
+  animation: step-in 0.45s var(--ease-soft) both;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+.sheet-up {
+  animation: sheet-up 0.35s var(--ease-soft) both;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fade-in 0.3s ease both;
+}
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.menu-in {
+  animation: slide-in-right 0.35s var(--ease-soft) both;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.draw-circle {
+  stroke-dasharray: 190;
+  stroke-dashoffset: 190;
+  animation: draw 0.8s var(--ease-soft) 0.1s forwards;
+}
+.draw-check {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: draw 0.5s var(--ease-soft) 0.7s forwards;
+}
+@keyframes ring-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(201 169 110 / 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 28px rgb(201 169 110 / 0);
+  }
+}
+.ring-pulse {
+  animation: ring-pulse 1.6s ease-out 0.9s 1;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .draw-circle,
+  .draw-check {
+    stroke-dashoffset: 0;
+  }
+}
